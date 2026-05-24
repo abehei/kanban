@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "agent-kanban": {
+      "command": "/absolute/path/to/kanban/node_modules/.bin/tsx",
+      "args": [
+        "/absolute/path/to/kanban/agents/src/mcp-server.ts"
+      ],
+      "env": {
+        "KANBAN_API_URL": "http://localhost:3001"
+      }
+    }
+  }
+}

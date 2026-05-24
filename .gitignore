@@ -31,6 +31,9 @@ Thumbs.db
 # Claude Code の内部設定（ローカル専用）
 .claude/
 
+# MCP サーバー設定（絶対パスが含まれる — .mcp.json.example をコピーして作成）
+.mcp.json
+
 # エディタ設定（プロジェクト共通でないもの）
 .idea/
 *.suo
