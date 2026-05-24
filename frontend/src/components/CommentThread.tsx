@@ -20,9 +20,8 @@ export function CommentThread({ taskId }: CommentThreadProps) {
     loadComments();
   }, [loadComments]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!inputText.trim()) return;
+  async function postComment() {
+    if (!inputText.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
@@ -37,6 +36,18 @@ export function CommentThread({ taskId }: CommentThreadProps) {
       console.error("コメント投稿失敗:", err);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    postComment();
+  }
+
+  function handleTextareaKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      postComment();
     }
   }
 
@@ -82,6 +93,7 @@ export function CommentThread({ taskId }: CommentThreadProps) {
         <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
+          onKeyDown={handleTextareaKeyDown}
           placeholder="コメントを入力..."
           rows={2}
           className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"

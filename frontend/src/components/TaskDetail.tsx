@@ -14,6 +14,12 @@ interface TaskDetailProps {
 export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetailProps) {
   const [isThinkingLogOpen, setIsThinkingLogOpen] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
+  const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
+  const [isSavingSubtask, setIsSavingSubtask] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editingTitleValue, setEditingTitleValue] = useState("");
+  const [isSavingTitle, setIsSavingTitle] = useState(false);
 
   async function handleColumnChange(newColumn: ColumnId) {
     const updated = await taskApi.update(task.id, { column: newColumn });
@@ -35,13 +41,108 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
     onTaskUpdated(updated);
   }
 
+  async function handleSubtaskEditStart(subtask: Task) {
+    setEditingSubtaskId(subtask.id);
+    setEditingTitle(subtask.title);
+  }
+
+  async function handleSubtaskSave(subtaskId: string) {
+    if (!editingTitle.trim()) {
+      setEditingSubtaskId(null);
+      return;
+    }
+
+    setIsSavingSubtask(true);
+    try {
+      await taskApi.updateSubtask(task.id, subtaskId, { title: editingTitle });
+      setEditingSubtaskId(null);
+    } finally {
+      setIsSavingSubtask(false);
+    }
+  }
+
+  function handleSubtaskCancel() {
+    setEditingSubtaskId(null);
+    setEditingTitle("");
+  }
+
+  function handleSubtaskKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Escape") {
+      handleSubtaskCancel();
+    }
+  }
+
+  function handleTitleEditStart() {
+    setIsEditingTitle(true);
+    setEditingTitleValue(task.title);
+  }
+
+  async function handleTitleSave() {
+    if (!editingTitleValue.trim()) {
+      setIsEditingTitle(false);
+      return;
+    }
+    setIsSavingTitle(true);
+    try {
+      const updated = await taskApi.update(task.id, { title: editingTitleValue });
+      onTaskUpdated(updated);
+      setIsEditingTitle(false);
+    } finally {
+      setIsSavingTitle(false);
+    }
+  }
+
+  function handleTitleCancel() {
+    setIsEditingTitle(false);
+    setEditingTitleValue("");
+  }
+
+  function handleTitleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Escape") {
+      handleTitleCancel();
+    }
+  }
+
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-slate-900">
       {/* ヘッダー */}
       <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4 gap-3 dark:border-slate-700">
-        <h2 className="text-base font-semibold text-slate-800 leading-snug pr-4 dark:text-slate-100">
-          {task.title}
-        </h2>
+        {isEditingTitle ? (
+          <div className="flex flex-1 flex-col gap-1">
+            <textarea
+              autoFocus
+              rows={2}
+              value={editingTitleValue}
+              onChange={(e) => setEditingTitleValue(e.target.value)}
+              onKeyDown={handleTitleKeyDown}
+              disabled={isSavingTitle}
+              className="rounded border border-blue-300 bg-white px-2 py-1 text-base sm:text-base text-slate-800 font-semibold focus:border-blue-500 focus:outline-none disabled:bg-slate-100 disabled:opacity-50 resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+            />
+            <div className="flex gap-1">
+              <button
+                onClick={handleTitleSave}
+                disabled={isSavingTitle}
+                className="rounded bg-blue-500 px-2 py-0.5 text-xs font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+              >
+                保存
+              </button>
+              <button
+                onClick={handleTitleCancel}
+                disabled={isSavingTitle}
+                className="rounded bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+              >
+                キャンセル
+              </button>
+            </div>
+          </div>
+        ) : (
+          <h2
+            onClick={handleTitleEditStart}
+            className="text-base font-semibold text-slate-800 leading-snug pr-4 flex-1 cursor-pointer hover:text-blue-600 dark:text-slate-100 dark:hover:text-blue-400"
+          >
+            {task.title}
+          </h2>
+        )}
         <button
           onClick={onClose}
           className="flex-shrink-0 text-slate-400 hover:text-slate-600 text-xl leading-none dark:text-slate-500 dark:hover:text-slate-300"
@@ -118,7 +219,42 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
                   <span className="text-sm">
                     {sub.column === "done" ? "✅" : sub.column === "in-progress" ? "🔄" : "⬜"}
                   </span>
-                  <span className="text-xs text-slate-700 flex-1 dark:text-slate-300">{sub.title}</span>
+                  {editingSubtaskId === sub.id ? (
+                    <div className="flex flex-1 flex-col gap-1">
+                      <textarea
+                        autoFocus
+                        rows={2}
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onKeyDown={handleSubtaskKeyDown}
+                        disabled={isSavingSubtask}
+                        className="rounded border border-blue-300 bg-white px-2 py-1 text-sm sm:text-xs text-slate-700 focus:border-blue-500 focus:outline-none disabled:bg-slate-100 disabled:opacity-50 resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+                      />
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleSubtaskSave(sub.id)}
+                          disabled={isSavingSubtask}
+                          className="rounded bg-blue-500 px-2 py-0.5 text-xs font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+                        >
+                          保存
+                        </button>
+                        <button
+                          onClick={handleSubtaskCancel}
+                          disabled={isSavingSubtask}
+                          className="rounded bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                        >
+                          キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span
+                      onClick={() => handleSubtaskEditStart(sub)}
+                      className="flex-1 text-xs text-slate-700 cursor-pointer hover:text-blue-600 hover:underline dark:text-slate-300 dark:hover:text-blue-400"
+                    >
+                      {sub.title}
+                    </span>
+                  )}
                   {sub.assigned_agent && (
                     <span className="text-xs text-slate-400 dark:text-slate-500">🤖 {sub.assigned_agent}</span>
                   )}

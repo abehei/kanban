@@ -38,6 +38,9 @@ export const taskApi = {
   addSubtask: (parentId: string, body: Pick<Task, "title"> & Partial<Pick<Task, "description" | "assigned_agent">>) =>
     request<Task>(`/tasks/${parentId}/subtasks`, { method: "POST", body: JSON.stringify(body) }),
 
+  updateSubtask: (parentId: string, subtaskId: string, body: Partial<Pick<Task, "title" | "description" | "column">>) =>
+    request<Task>(`/tasks/${parentId}/subtasks/${subtaskId}`, { method: "PATCH", body: JSON.stringify(body) }),
+
   listComments: (taskId: string) => request<Comment[]>(`/tasks/${taskId}/comments`),
 
   addComment: (taskId: string, body: { author: string; author_type?: string; content: string; mentions?: string[] }) =>
