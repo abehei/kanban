@@ -1,0 +1,36 @@
+# 依存パッケージ
+node_modules/
+
+# ビルド成果物
+dist/
+build/
+.vite/
+
+# 環境変数（APIキーなど機密情報を含む — 絶対にコミットしない）
+.env
+.env.local
+.env.*.local
+*.env
+
+# SQLiteデータベースファイル・WALファイル（ローカルデータ）
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/*.sqlite
+data/*.sqlite3
+
+# ログ
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# エディタ設定（プロジェクト共通でないもの）
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

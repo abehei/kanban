@@ -1,0 +1,20 @@
+{
+  "_comment": "承認ゲートの条件定義。フォーク先でこのファイルを上書きしてカスタマイズできます。",
+  "gates": [
+    {
+      "name": "外部API呼び出し前",
+      "description": "外部サービスのAPIを呼び出す前に人間の確認を取る",
+      "trigger_keywords": ["外部API", "Webhook", "sendEmail", "payment"]
+    },
+    {
+      "name": "本番環境へのデプロイ前",
+      "description": "本番環境に影響するデプロイ作業の前に確認を取る",
+      "trigger_keywords": ["deploy", "production", "本番"]
+    },
+    {
+      "name": "データの削除・変更前",
+      "description": "データを削除・上書きする前に確認を取る",
+      "trigger_keywords": ["DELETE", "DROP", "truncate", "delete all"]
+    }
+  ]
+}
