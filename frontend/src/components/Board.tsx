@@ -31,8 +31,8 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="w-96 rounded-xl bg-white p-5 shadow-xl">
-        <h2 className="mb-4 text-base font-semibold text-slate-800">タスクを追加</h2>
+      <div className="w-96 rounded-xl bg-white p-5 shadow-xl dark:bg-slate-800">
+        <h2 className="mb-4 text-base font-semibold text-slate-800 dark:text-slate-100">タスクを追加</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             autoFocus
@@ -40,20 +40,20 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="タスクのタイトル"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="説明（任意）"
             rows={3}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none resize-none"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
           />
           <div className="flex justify-end gap-2 mt-1">
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
+              className="rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
             >
               キャンセル
             </button>
@@ -71,7 +71,12 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
   );
 }
 
-export function Board() {
+interface BoardProps {
+  isDark: boolean;
+  onToggleTheme: () => void;
+}
+
+export function Board({ isDark, onToggleTheme }: BoardProps) {
   const { tasks, agentStatuses, isLoading, error, moveTask, createTask } = useTasks();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
@@ -124,7 +129,7 @@ export function Board() {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center text-slate-500">
+      <div className="flex h-full items-center justify-center text-slate-500 dark:text-slate-400 dark:bg-slate-900">
         読み込み中...
       </div>
     );
@@ -132,23 +137,23 @@ export function Board() {
 
   if (error) {
     return (
-      <div className="flex h-full items-center justify-center text-red-500">
+      <div className="flex h-full items-center justify-center text-red-500 dark:bg-slate-900">
         エラー: {error}
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-slate-100">
+    <div className="flex h-full flex-col overflow-hidden bg-slate-100 dark:bg-slate-900">
       {/* ヘッダー */}
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3 shadow-sm">
-        <h1 className="text-base font-bold text-slate-800">Agent Kanban</h1>
+      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3 shadow-sm dark:bg-slate-900 dark:border-slate-700">
+        <h1 className="text-base font-bold text-slate-800 dark:text-slate-100">Agent Kanban</h1>
 
         <div className="flex items-center gap-2 flex-wrap">
           {Array.from(agentStatuses.values()).map((status) => (
             <div
               key={status.agentId}
-              className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs"
+              className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs dark:bg-slate-800"
             >
               <span
                 className={`h-2 w-2 rounded-full ${
@@ -159,7 +164,7 @@ export function Board() {
                     : "bg-slate-400"
                 }`}
               />
-              <span className="font-medium text-slate-700">🤖 {status.agentId}</span>
+              <span className="font-medium text-slate-700 dark:text-slate-300">🤖 {status.agentId}</span>
               {status.step && (
                 <span className="text-slate-400 truncate max-w-32">— {status.step}</span>
               )}
@@ -167,12 +172,20 @@ export function Board() {
           ))}
         </div>
 
-        <button
-          onClick={() => setIsNewTaskModalOpen(true)}
-          className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
-        >
-          + タスク追加
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onToggleTheme}
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
+          <button
+            onClick={() => setIsNewTaskModalOpen(true)}
+            className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+          >
+            + タスク追加
+          </button>
+        </div>
       </header>
 
       {/* ボード本体 */}
@@ -199,8 +212,8 @@ export function Board() {
 
           <DragOverlay>
             {draggingTask && (
-              <div className="rounded-lg border border-blue-300 bg-white p-3 shadow-lg opacity-90 w-64">
-                <p className="text-sm font-medium text-slate-800">{draggingTask.title}</p>
+              <div className="rounded-lg border border-blue-300 bg-white p-3 shadow-lg opacity-90 w-64 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
+                <p className="text-sm font-medium">{draggingTask.title}</p>
               </div>
             )}
           </DragOverlay>
@@ -208,7 +221,7 @@ export function Board() {
 
         {/* 右スライドパネル */}
         {selectedTask && (
-          <div className="w-80 flex-shrink-0 border-l border-slate-200 bg-white shadow-lg">
+          <div className="w-80 flex-shrink-0 border-l border-slate-200 bg-white shadow-lg dark:bg-slate-900 dark:border-slate-700">
             <TaskDetail
               task={selectedTask}
               subtasks={tasks.filter((t) => t.parent_id === selectedTask.id)}

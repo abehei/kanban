@@ -36,15 +36,15 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
   }
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-white">
+    <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-slate-900">
       {/* ヘッダー */}
-      <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4">
-        <h2 className="text-base font-semibold text-slate-800 leading-snug pr-4">
+      <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4 gap-3 dark:border-slate-700">
+        <h2 className="text-base font-semibold text-slate-800 leading-snug pr-4 dark:text-slate-100">
           {task.title}
         </h2>
         <button
           onClick={onClose}
-          className="flex-shrink-0 text-slate-400 hover:text-slate-600 text-xl leading-none"
+          className="flex-shrink-0 text-slate-400 hover:text-slate-600 text-xl leading-none dark:text-slate-500 dark:hover:text-slate-300"
         >
           ×
         </button>
@@ -54,19 +54,19 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
         {/* 説明 */}
         {task.description && (
           <div>
-            <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">説明</h3>
-            <p className="text-sm text-slate-700 whitespace-pre-wrap">{task.description}</p>
+            <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">説明</h3>
+            <p className="text-sm text-slate-700 whitespace-pre-wrap dark:text-slate-300">{task.description}</p>
           </div>
         )}
 
         {/* ステータス・担当 */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 w-16">カラム</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 w-16">カラム</span>
             <select
               value={task.column}
               onChange={(e) => handleColumnChange(e.target.value as ColumnId)}
-              className="rounded border border-slate-200 px-2 py-1 text-xs focus:border-blue-400 focus:outline-none"
+              className="rounded border border-slate-200 px-2 py-1 text-xs focus:border-blue-400 focus:outline-none dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200"
             >
               {COLUMNS.map((col) => (
                 <option key={col.id} value={col.id}>{col.label}</option>
@@ -76,8 +76,8 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
 
           {task.assigned_agent && (
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 w-16">担当</span>
-              <span className="text-sm text-slate-700">🤖 {task.assigned_agent}</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 w-16">担当</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">🤖 {task.assigned_agent}</span>
             </div>
           )}
         </div>
@@ -85,11 +85,11 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
         {/* 進捗バー */}
         {task.progress > 0 && (
           <div>
-            <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
               <span>{task.current_step ?? "処理中..."}</span>
               <span>{task.progress}%</span>
             </div>
-            <div className="h-2 w-full rounded-full bg-slate-100">
+            <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700">
               <div
                 className="h-2 rounded-full bg-blue-400 transition-all duration-300"
                 style={{ width: `${task.progress}%` }}
@@ -109,18 +109,18 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
         {/* サブタスク */}
         {subtasks.length > 0 && (
           <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
               サブタスク ({subtasks.filter((s) => s.column === "done").length}/{subtasks.length})
             </h3>
             <div className="flex flex-col gap-1.5">
               {subtasks.map((sub) => (
-                <div key={sub.id} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
+                <div key={sub.id} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 dark:bg-slate-800">
                   <span className="text-sm">
                     {sub.column === "done" ? "✅" : sub.column === "in-progress" ? "🔄" : "⬜"}
                   </span>
-                  <span className="text-xs text-slate-700 flex-1">{sub.title}</span>
+                  <span className="text-xs text-slate-700 flex-1 dark:text-slate-300">{sub.title}</span>
                   {sub.assigned_agent && (
-                    <span className="text-xs text-slate-400">🤖 {sub.assigned_agent}</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">🤖 {sub.assigned_agent}</span>
                   )}
                 </div>
               ))}
@@ -133,15 +133,15 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
           <div>
             <button
               onClick={() => setIsThinkingLogOpen(!isThinkingLogOpen)}
-              className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600"
+              className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
             >
               <span>思考ログ ({task.thinking_log.length}件)</span>
               <span>{isThinkingLogOpen ? "▲" : "▶"}</span>
             </button>
             {isThinkingLogOpen && (
-              <div className="mt-2 max-h-40 overflow-y-auto rounded-lg bg-slate-50 p-3">
+              <div className="mt-2 max-h-40 overflow-y-auto rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
                 {task.thinking_log.map((log, index) => (
-                  <p key={index} className="text-xs text-slate-500 mb-1 leading-relaxed">
+                  <p key={index} className="text-xs text-slate-500 mb-1 leading-relaxed dark:text-slate-400">
                     {log}
                   </p>
                 ))}
