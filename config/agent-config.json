@@ -1,0 +1,14 @@
+{
+  "_comment": "エージェントの設定。フォーク先でこのファイルを上書きしてカスタマイズできます。",
+  "main_agent": {
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "system_prompt_appendix": ""
+  },
+  "sub_agent": {
+    "model": "claude-sonnet-4-6",
+    "max_tokens": 4096,
+    "system_prompt_appendix": ""
+  },
+  "polling_interval_ms": 5000
+}
