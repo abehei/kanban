@@ -7,6 +7,7 @@ interface TaskCardProps {
   isSelected: boolean;
   subtaskCount: number;
   completedSubtaskCount: number;
+  parentTitle?: string;
   onClick: (task: Task) => void;
 }
 
@@ -15,6 +16,7 @@ export function TaskCard({
   isSelected,
   subtaskCount,
   completedSubtaskCount,
+  parentTitle,
   onClick,
 }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -43,6 +45,13 @@ export function TaskCard({
         isDragging ? "opacity-50" : "opacity-100",
       ].join(" ")}
     >
+      {/* 親タスク表示（サブタスクの場合） */}
+      {parentTitle && (
+        <p className="mb-1 text-xs text-slate-400 dark:text-slate-500 truncate">
+          ↳ {parentTitle}
+        </p>
+      )}
+
       {/* タイトル */}
       <p className="text-sm font-medium text-slate-800 leading-snug line-clamp-2 dark:text-slate-100">
         {task.title}

@@ -58,6 +58,9 @@ export function Column({
           {tasks.map((task) => {
             const subs = subtasksOf(task.id);
             const completedSubs = subs.filter((s) => s.column === "done");
+            const parent = task.parent_id
+              ? allTasks.find((t) => t.id === task.parent_id)
+              : undefined;
             return (
               <TaskCard
                 key={task.id}
@@ -65,6 +68,7 @@ export function Column({
                 isSelected={selectedTaskId === task.id}
                 subtaskCount={subs.length}
                 completedSubtaskCount={completedSubs.length}
+                parentTitle={parent?.title}
                 onClick={onTaskClick}
               />
             );

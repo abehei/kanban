@@ -91,6 +91,9 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
   const topLevelTasks = tasks.filter((t) => t.parent_id === null);
 
   function tasksForColumn(columnId: ColumnId) {
+    if (columnId === "waiting") {
+      return tasks.filter((t) => t.column === columnId);
+    }
     return topLevelTasks.filter((t) => t.column === columnId);
   }
 
