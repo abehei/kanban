@@ -26,7 +26,7 @@ export function Column({
     allTasks.filter((t) => t.parent_id === taskId);
 
   return (
-    <div className="flex w-64 flex-shrink-0 flex-col rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
+    <div className="flex w-56 sm:w-64 flex-shrink-0 flex-col rounded-xl bg-slate-50 border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
       {/* カラムヘッダー */}
       <div className="flex items-center justify-between px-3 py-2.5">
         <div className="flex items-center gap-2">

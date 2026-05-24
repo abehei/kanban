@@ -77,14 +77,14 @@ export function CommentThread({ taskId }: CommentThreadProps) {
           value={authorName}
           onChange={(e) => setAuthorName(e.target.value)}
           placeholder="投稿者名"
-          className="rounded border border-slate-200 px-2 py-1 text-xs focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
+          className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
         />
         <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           placeholder="コメントを入力..."
           rows={2}
-          className="rounded border border-slate-200 px-2 py-1 text-xs focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
+          className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
         />
         <button
           type="submit"

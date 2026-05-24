@@ -5,6 +5,7 @@ import {
   DragOverlay,
   DragStartEvent,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -40,14 +41,14 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="タスクのタイトル"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-base sm:text-sm focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="説明（任意）"
             rows={3}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-base sm:text-sm focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
           />
           <div className="flex justify-end gap-2 mt-1">
             <button
@@ -83,7 +84,8 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
   );
 
   const topLevelTasks = tasks.filter((t) => t.parent_id === null);
@@ -149,7 +151,7 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
       <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3 shadow-sm dark:bg-slate-900 dark:border-slate-700">
         <h1 className="text-base font-bold text-slate-800 dark:text-slate-100">Agent Kanban</h1>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="hidden sm:flex items-center gap-2 flex-wrap">
           {Array.from(agentStatuses.values()).map((status) => (
             <div
               key={status.agentId}
@@ -183,7 +185,7 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
             onClick={() => setIsNewTaskModalOpen(true)}
             className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
           >
-            + タスク追加
+            + <span className="hidden sm:inline">タスク</span>追加
           </button>
         </div>
       </header>
@@ -221,14 +223,22 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
 
         {/* 右スライドパネル */}
         {selectedTask && (
-          <div className="w-80 flex-shrink-0 border-l border-slate-200 bg-white shadow-lg dark:bg-slate-900 dark:border-slate-700">
-            <TaskDetail
-              task={selectedTask}
-              subtasks={tasks.filter((t) => t.parent_id === selectedTask.id)}
-              onClose={() => setSelectedTask(null)}
-              onTaskUpdated={handleTaskUpdated}
+          <>
+            {/* モバイル用オーバーレイ背景 */}
+            <div
+              className="fixed inset-0 z-30 bg-black/40 sm:hidden"
+              onClick={() => setSelectedTask(null)}
             />
-          </div>
+            {/* パネル本体 */}
+            <div className="fixed inset-x-0 bottom-0 top-14 z-40 overflow-y-auto bg-white shadow-lg dark:bg-slate-900 sm:relative sm:inset-auto sm:top-auto sm:z-auto sm:w-80 sm:flex-shrink-0 sm:border-l sm:border-slate-200 sm:dark:border-slate-700">
+              <TaskDetail
+                task={selectedTask}
+                subtasks={tasks.filter((t) => t.parent_id === selectedTask.id)}
+                onClose={() => setSelectedTask(null)}
+                onTaskUpdated={handleTaskUpdated}
+              />
+            </div>
+          </>
         )}
       </div>
 
