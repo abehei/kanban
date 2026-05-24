@@ -9,9 +9,10 @@ interface TaskDetailProps {
   subtasks: Task[];
   onClose: () => void;
   onTaskUpdated: (updated: Task) => void;
+  onTaskDeleted: () => void;
 }
 
-export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetailProps) {
+export function TaskDetail({ task, subtasks, onClose, onTaskUpdated, onTaskDeleted }: TaskDetailProps) {
   const [isThinkingLogOpen, setIsThinkingLogOpen] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitleValue, setEditingTitleValue] = useState("");
   const [isSavingTitle, setIsSavingTitle] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function handleColumnChange(newColumn: ColumnId) {
     const updated = await taskApi.update(task.id, { column: newColumn });
@@ -103,6 +105,20 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
     }
   }
 
+  async function handleDelete() {
+    if (!window.confirm("このタスクを削除してもよろしいですか？")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await taskApi.delete(task.id);
+      onTaskDeleted();
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-slate-900">
       {/* ヘッダー */}
@@ -143,12 +159,22 @@ export function TaskDetail({ task, subtasks, onClose, onTaskUpdated }: TaskDetai
             {task.title}
           </h2>
         )}
-        <button
-          onClick={onClose}
-          className="flex-shrink-0 text-slate-400 hover:text-slate-600 text-xl leading-none dark:text-slate-500 dark:hover:text-slate-300"
-        >
-          ×
-        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-red-400 hover:text-red-600 text-lg leading-none dark:text-red-500 dark:hover:text-red-400 disabled:opacity-50"
+            title="削除"
+          >
+            🗑️
+          </button>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600 text-xl leading-none dark:text-slate-500 dark:hover:text-slate-300"
+          >
+            ×
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-5 p-5">

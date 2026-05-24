@@ -123,6 +123,10 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
     setSelectedTask(updated);
   }, []);
 
+  const handleTaskDeleted = useCallback(() => {
+    setSelectedTask(null);
+  }, []);
+
   async function handleCreateTask(title: string, description: string) {
     await createTask(title, description);
     setIsNewTaskModalOpen(false);
@@ -239,6 +243,7 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
                 subtasks={tasks.filter((t) => t.parent_id === selectedTask.id)}
                 onClose={() => setSelectedTask(null)}
                 onTaskUpdated={handleTaskUpdated}
+                onTaskDeleted={handleTaskDeleted}
               />
             </div>
           </>
