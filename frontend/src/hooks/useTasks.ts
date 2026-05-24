@@ -89,7 +89,8 @@ export function useTasks() {
 
   const moveTask = useCallback(async (taskId: string, targetColumn: Task["column"]) => {
     try {
-      await taskApi.update(taskId, { column: targetColumn });
+      const updated = await taskApi.update(taskId, { column: targetColumn });
+      dispatch({ type: "ADD_OR_UPDATE_TASK", task: updated });
     } catch (err) {
       dispatch({ type: "SET_ERROR", error: String(err) });
     }
@@ -97,7 +98,8 @@ export function useTasks() {
 
   const createTask = useCallback(async (title: string, description?: string) => {
     try {
-      await taskApi.create({ title, description, column: "backlog" });
+      const created = await taskApi.create({ title, description, column: "backlog" });
+      dispatch({ type: "ADD_OR_UPDATE_TASK", task: created });
     } catch (err) {
       dispatch({ type: "SET_ERROR", error: String(err) });
     }
