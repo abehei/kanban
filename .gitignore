@@ -28,6 +28,9 @@ yarn-debug.log*
 .DS_Store
 Thumbs.db
 
+# Claude Code の内部設定（ローカル専用）
+.claude/
+
 # エディタ設定（プロジェクト共通でないもの）
 .idea/
 *.suo
