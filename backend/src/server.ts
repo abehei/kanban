@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
@@ -20,6 +20,12 @@ app.use(express.json());
 
 app.use("/api/tasks", tasksRouter);
 app.use("/api/events", eventsRouter);
+
+// 未キャッチのエラーを HTML でなく JSON で返す
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+  res.status(500).json({ error: err.message ?? "内部サーバーエラー" });
+});
 
 app.listen(PORT, () => {
   console.log(`バックエンドサーバー起動: http://localhost:${PORT}`);

@@ -54,31 +54,36 @@ router.post("/", (req: Request, res: Response) => {
     return;
   }
 
-  const db = getDatabase();
-  const now = new Date().toISOString();
-  const newTask = {
-    id: uuidv4(),
-    title,
-    description,
-    column,
-    parent_id: parent_id ?? null,
-    assigned_agent: assigned_agent ?? null,
-    progress: 0,
-    current_step: null,
-    thinking_log: "[]",
-    error: null,
-    created_at: now,
-    updated_at: now,
-  };
+  try {
+    const db = getDatabase();
+    const now = new Date().toISOString();
+    const newTask = {
+      id: uuidv4(),
+      title,
+      description,
+      column,
+      parent_id: parent_id ?? null,
+      assigned_agent: assigned_agent ?? null,
+      progress: 0,
+      current_step: null,
+      thinking_log: "[]",
+      error: null,
+      created_at: now,
+      updated_at: now,
+    };
 
-  db.prepare(`
-    INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, created_at, updated_at)
-    VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @created_at, @updated_at)
-  `).run(newTask);
+    db.prepare(`
+      INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, created_at, updated_at)
+      VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @created_at, @updated_at)
+    `).run(newTask);
 
-  const created = parseTaskJsonFields(newTask);
-  broadcast("task:created", created);
-  res.status(201).json(created);
+    const created = parseTaskJsonFields(newTask);
+    broadcast("task:created", created);
+    res.status(201).json(created);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "タスクの作成に失敗しました";
+    res.status(400).json({ error: message });
+  }
 });
 
 // タスク更新
@@ -112,17 +117,22 @@ router.patch("/:id", (req: Request, res: Response) => {
 
   updates.updated_at = new Date().toISOString();
 
-  const setClause = Object.keys(updates).map((k) => `${k} = @${k}`).join(", ");
-  db.prepare(`UPDATE tasks SET ${setClause} WHERE id = @id`).run({
-    ...updates,
-    id: req.params.id,
-  });
+  try {
+    const setClause = Object.keys(updates).map((k) => `${k} = @${k}`).join(", ");
+    db.prepare(`UPDATE tasks SET ${setClause} WHERE id = @id`).run({
+      ...updates,
+      id: req.params.id,
+    });
 
-  const updatedTask = parseTaskJsonFields(
-    db.prepare("SELECT * FROM tasks WHERE id = ?").get(req.params.id)
-  );
-  broadcast("task:updated", updatedTask);
-  res.json(updatedTask);
+    const updatedTask = parseTaskJsonFields(
+      db.prepare("SELECT * FROM tasks WHERE id = ?").get(req.params.id)
+    );
+    broadcast("task:updated", updatedTask);
+    res.json(updatedTask);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "タスクの更新に失敗しました";
+    res.status(400).json({ error: message });
+  }
 });
 
 // タスク削除
@@ -172,14 +182,19 @@ router.post("/:id/subtasks", (req: Request, res: Response) => {
     updated_at: now,
   };
 
-  db.prepare(`
-    INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, created_at, updated_at)
-    VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @created_at, @updated_at)
-  `).run(subtask);
+  try {
+    db.prepare(`
+      INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, created_at, updated_at)
+      VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @created_at, @updated_at)
+    `).run(subtask);
 
-  const created = parseTaskJsonFields(subtask);
-  broadcast("task:created", created);
-  res.status(201).json(created);
+    const created = parseTaskJsonFields(subtask);
+    broadcast("task:created", created);
+    res.status(201).json(created);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "サブタスクの作成に失敗しました";
+    res.status(400).json({ error: message });
+  }
 });
 
 // コメント一覧取得
@@ -219,14 +234,19 @@ router.post("/:id/comments", (req: Request, res: Response) => {
     created_at: new Date().toISOString(),
   };
 
-  db.prepare(`
-    INSERT INTO comments (id, task_id, author, author_type, content, mentions, created_at)
-    VALUES (@id, @task_id, @author, @author_type, @content, @mentions, @created_at)
-  `).run(newComment);
+  try {
+    db.prepare(`
+      INSERT INTO comments (id, task_id, author, author_type, content, mentions, created_at)
+      VALUES (@id, @task_id, @author, @author_type, @content, @mentions, @created_at)
+    `).run(newComment);
 
-  const created = parseCommentJsonFields(newComment);
-  broadcast("comment:added", created);
-  res.status(201).json(created);
+    const created = parseCommentJsonFields(newComment);
+    broadcast("comment:added", created);
+    res.status(201).json(created);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "コメントの投稿に失敗しました";
+    res.status(400).json({ error: message });
+  }
 });
 
 // SQLiteから取得したタスクのJSON文字列フィールドをパースする
