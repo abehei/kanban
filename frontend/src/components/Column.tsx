@@ -51,7 +51,7 @@ export function Column({
         ref={setNodeRef}
         className={[
           "flex flex-1 flex-col gap-2 overflow-y-auto px-2 pb-2 min-h-32",
-          isOver ? "bg-blue-50/50 rounded-b-xl dark:bg-blue-900/20" : "",
+          isOver ? "bg-accent-500/10 rounded-b-xl dark:bg-accent-500/10" : "",
         ].join(" ")}
       >
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>

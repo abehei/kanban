@@ -34,6 +34,9 @@ Thumbs.db
 # MCP サーバー設定（絶対パスが含まれる — .mcp.json.example をコピーして作成）
 .mcp.json
 
+# Playwright MCP キャッシュ
+.playwright-mcp/
+
 # エディタ設定（プロジェクト共通でないもの）
 .idea/
 *.suo

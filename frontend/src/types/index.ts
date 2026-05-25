@@ -4,6 +4,8 @@ export type AuthorType = "human" | "agent";
 
 export type AgentStatusType = "idle" | "running" | "error";
 
+export type TaskColor = "red" | "orange" | "yellow" | "green" | "blue" | "purple" | "gray";
+
 export interface Task {
   id: string;
   title: string;
@@ -15,6 +17,7 @@ export interface Task {
   current_step: string | null;
   thinking_log: string[];
   error: string | null;
+  color: TaskColor | null;
   created_at: string;
   updated_at: string;
 }

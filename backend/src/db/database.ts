@@ -57,7 +57,11 @@ export function initializeSchema(db: Database.Database): void {
         CHECK (color IN ('red','orange','yellow','green','blue','purple','gray') OR color IS NULL)
     `);
   } catch (err) {
-    // カラムが既に存在する場合はエラーを無視
+    // カラムが既に存在する場合や、その他の理由でALTER TABLEが失敗した場合
+    // SQLiteでは「duplicate column name」エラーが発生するが、既知の状況として無視する
+    if (err instanceof Error && !err.message.includes("duplicate column name")) {
+      console.warn("Warning: color column migration may have failed:", err.message);
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Task } from "../types";
+import { getTaskColorClasses } from "../constants/taskColors";
 
 interface TaskCardProps {
   task: Task;
@@ -35,12 +36,13 @@ export function TaskCard({
       {...listeners}
       onClick={() => onClick(task)}
       className={[
-        "cursor-pointer select-none rounded-lg border bg-white p-3 shadow-sm",
-        "hover:border-blue-300 hover:shadow-md transition-all duration-150",
-        "dark:bg-slate-700 dark:shadow-slate-900/30",
-        "dark:hover:border-blue-500",
+        "cursor-pointer select-none rounded-lg border p-3 shadow-sm",
+        getTaskColorClasses(task.color),
+        "hover:border-accent-400 hover:shadow-md transition-all duration-150",
+        "dark:shadow-slate-900/30",
+        "dark:hover:border-accent-500",
         isSelected
-          ? "border-blue-400 ring-2 ring-blue-200 dark:border-blue-500 dark:ring-blue-500/30"
+          ? "border-accent-500 ring-2 ring-accent-400/30 dark:border-accent-400 dark:ring-accent-400/30"
           : "border-slate-200 dark:border-slate-600",
         isDragging ? "opacity-50" : "opacity-100",
       ].join(" ")}
@@ -85,7 +87,7 @@ export function TaskCard({
           </div>
           <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-600">
             <div
-              className="h-1.5 rounded-full bg-blue-400 dark:bg-blue-500 transition-all duration-300"
+              className="h-1.5 rounded-full bg-accent-500 transition-all duration-300"
               style={{ width: `${task.progress}%` }}
             />
           </div>

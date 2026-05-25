@@ -14,6 +14,7 @@ import { COLUMNS } from "../types";
 import { Column } from "./Column";
 import { TaskDetail } from "./TaskDetail";
 import { useTasks } from "../hooks/useTasks";
+import { ACCENT_COLORS } from "../theme";
 
 interface NewTaskModalProps {
   onSubmit: (title: string, description: string) => void;
@@ -41,14 +42,14 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="タスクのタイトル"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base sm:text-sm focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-base sm:text-sm focus:border-accent-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
           />
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="説明（任意）"
             rows={3}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base sm:text-sm focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-base sm:text-sm focus:border-accent-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400"
           />
           <div className="flex justify-end gap-2 mt-1">
             <button
@@ -61,7 +62,7 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
             <button
               type="submit"
               disabled={!title.trim()}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+              className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600 disabled:opacity-50"
             >
               追加
             </button>
@@ -75,9 +76,11 @@ function NewTaskModal({ onSubmit, onCancel }: NewTaskModalProps) {
 interface BoardProps {
   isDark: boolean;
   onToggleTheme: () => void;
+  accentColorId: string;
+  onChangeAccentColor: (colorId: string) => void;
 }
 
-export function Board({ isDark, onToggleTheme }: BoardProps) {
+export function Board({ isDark, onToggleTheme, accentColorId, onChangeAccentColor }: BoardProps) {
   const { tasks, agentStatuses, isLoading, error, moveTask, createTask } = useTasks();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
@@ -182,6 +185,22 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* アクセントカラーピッカー */}
+          <div className="hidden sm:flex items-center gap-1 mr-1">
+            {ACCENT_COLORS.map((color) => (
+              <button
+                key={color.id}
+                onClick={() => onChangeAccentColor(color.id)}
+                title={color.label}
+                style={{ backgroundColor: color.hex }}
+                className={[
+                  "h-5 w-5 rounded-full transition-transform hover:scale-110",
+                  accentColorId === color.id ? "ring-2 ring-offset-1 ring-slate-400 dark:ring-slate-500" : "",
+                ].join(" ")}
+              />
+            ))}
+          </div>
+
           <button
             onClick={onToggleTheme}
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
@@ -190,7 +209,7 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
           </button>
           <button
             onClick={() => setIsNewTaskModalOpen(true)}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
+            className="rounded-lg bg-accent-500 px-4 py-2 text-sm font-medium text-white hover:bg-accent-600"
           >
             + <span className="hidden sm:inline">タスク</span>追加
           </button>
@@ -221,7 +240,7 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
 
           <DragOverlay>
             {draggingTask && (
-              <div className="rounded-lg border border-blue-300 bg-white p-3 shadow-lg opacity-90 w-64 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
+              <div className="rounded-lg border border-accent-400 bg-white p-3 shadow-lg opacity-90 w-64 dark:bg-slate-800 dark:text-slate-100">
                 <p className="text-sm font-medium">{draggingTask.title}</p>
               </div>
             )}
@@ -239,6 +258,7 @@ export function Board({ isDark, onToggleTheme }: BoardProps) {
             {/* パネル本体 */}
             <div className="fixed inset-x-0 bottom-0 top-14 z-40 overflow-y-auto bg-white shadow-lg dark:bg-slate-900 sm:relative sm:inset-auto sm:top-auto sm:z-auto sm:w-80 sm:flex-shrink-0 sm:border-l sm:border-slate-200 sm:dark:border-slate-700">
               <TaskDetail
+                key={selectedTask.id}
                 task={selectedTask}
                 subtasks={tasks.filter((t) => t.parent_id === selectedTask.id)}
                 onClose={() => setSelectedTask(null)}

@@ -88,7 +88,7 @@ export function CommentThread({ taskId }: CommentThreadProps) {
           value={authorName}
           onChange={(e) => setAuthorName(e.target.value)}
           placeholder="投稿者名"
-          className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-blue-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
+          className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-accent-400 focus:outline-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
         />
         <textarea
           value={inputText}
@@ -96,12 +96,12 @@ export function CommentThread({ taskId }: CommentThreadProps) {
           onKeyDown={handleTextareaKeyDown}
           placeholder="コメントを入力..."
           rows={2}
-          className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-blue-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
+          className="rounded border border-slate-200 px-2 py-1 text-sm sm:text-xs focus:border-accent-400 focus:outline-none resize-none dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400"
         />
         <button
           type="submit"
           disabled={isSubmitting || !inputText.trim()}
-          className="self-end rounded bg-blue-500 px-3 py-1 text-xs font-medium text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="self-end rounded bg-accent-500 px-3 py-1 text-xs font-medium text-white hover:bg-accent-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           送信
         </button>

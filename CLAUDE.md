@@ -1,3 +1,16 @@
+## 必須ルール(例外なし)
+
+実装を伴うすべてのタスクで、以下を必ず守る:
+
+1. コードを1行も書く前に spec-writer を呼ぶ
+2. spec が出来たら architect を呼ぶ
+3. 実装は implementer または implementer-lite のみが行う。親は実装しない
+4. implementer が終わったら必ず test-writer を呼ぶ
+5. **フロントエンドのコンポーネントを変更したら** test-writer に加えて **ui-reviewer も呼ぶ**（Playwrightでスクリーンショット確認）
+6. 公開APIが変わったら必ず doc-writer を呼ぶ
+
+「時間短縮のため直接実装する」「小さいから自分でやる」は禁止。
+
 # Agent Kanban — Claude Code 向け指示書
 
 このファイルはClaude Codeが作業するときに参照する指示書です。

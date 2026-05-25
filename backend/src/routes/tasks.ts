@@ -47,7 +47,7 @@ router.get("/:id", (req: Request, res: Response) => {
 
 // タスク作成
 router.post("/", (req: Request, res: Response) => {
-  const { title, description = "", column = "backlog", assigned_agent, parent_id } = req.body;
+  const { title, description = "", column = "backlog", assigned_agent, parent_id, color } = req.body;
 
   if (!title) {
     res.status(400).json({ error: "タイトルは必須です" });
@@ -68,13 +68,14 @@ router.post("/", (req: Request, res: Response) => {
       current_step: null,
       thinking_log: "[]",
       error: null,
+      color: color ?? null,
       created_at: now,
       updated_at: now,
     };
 
     db.prepare(`
-      INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, created_at, updated_at)
-      VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @created_at, @updated_at)
+      INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, color, created_at, updated_at)
+      VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @color, @created_at, @updated_at)
     `).run(newTask);
 
     const created = parseTaskJsonFields(newTask);
@@ -98,7 +99,7 @@ router.patch("/:id", (req: Request, res: Response) => {
 
   const allowedFields = [
     "title", "description", "column", "assigned_agent",
-    "progress", "current_step", "thinking_log", "error",
+    "progress", "current_step", "thinking_log", "error", "color",
   ];
 
   const updates: Record<string, unknown> = {};
@@ -178,14 +179,15 @@ router.post("/:id/subtasks", (req: Request, res: Response) => {
     current_step: null,
     thinking_log: "[]",
     error: null,
+    color: null,
     created_at: now,
     updated_at: now,
   };
 
   try {
     db.prepare(`
-      INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, created_at, updated_at)
-      VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @created_at, @updated_at)
+      INSERT INTO tasks (id, title, description, column, parent_id, assigned_agent, progress, current_step, thinking_log, error, color, created_at, updated_at)
+      VALUES (@id, @title, @description, @column, @parent_id, @assigned_agent, @progress, @current_step, @thinking_log, @error, @color, @created_at, @updated_at)
     `).run(subtask);
 
     const created = parseTaskJsonFields(subtask);

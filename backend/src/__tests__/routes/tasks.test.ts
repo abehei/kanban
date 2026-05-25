@@ -138,3 +138,89 @@ describe("POST /api/tasks/:id/comments", () => {
     expect(res.body.content).toBe("テストコメント");
   });
 });
+
+describe("POST /api/tasks/:id/subtasks", () => {
+  it("親タスクにサブタスクを追加できる", async () => {
+    const parent = await request(app)
+      .post("/api/tasks")
+      .send({ title: "親タスク" });
+    const res = await request(app)
+      .post(`/api/tasks/${parent.body.id}/subtasks`)
+      .send({ title: "サブタスク" });
+    expect(res.status).toBe(201);
+    expect(res.body.parent_id).toBe(parent.body.id);
+    expect(res.body.column).toBe("backlog");
+  });
+
+  it("存在しない親タスクへのサブタスク追加で404を返す", async () => {
+    const res = await request(app)
+      .post("/api/tasks/nonexistent/subtasks")
+      .send({ title: "サブタスク" });
+    expect(res.status).toBe(404);
+  });
+
+  it("titleが空の場合は400を返す", async () => {
+    const parent = await request(app)
+      .post("/api/tasks")
+      .send({ title: "親タスク" });
+    const res = await request(app)
+      .post(`/api/tasks/${parent.body.id}/subtasks`)
+      .send({ title: "" });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe("GET /api/tasks/:id/comments", () => {
+  it("タスクのコメント一覧を取得できる", async () => {
+    const task = await request(app)
+      .post("/api/tasks")
+      .send({ title: "コメントテスト" });
+    await request(app)
+      .post(`/api/tasks/${task.body.id}/comments`)
+      .send({ author: "ユーザー", content: "コメント1" });
+    const res = await request(app)
+      .get(`/api/tasks/${task.body.id}/comments`);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].content).toBe("コメント1");
+  });
+
+  it("コメントがない場合は空配列を返す", async () => {
+    const task = await request(app)
+      .post("/api/tasks")
+      .send({ title: "コメントなしテスト" });
+    const res = await request(app)
+      .get(`/api/tasks/${task.body.id}/comments`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+});
+
+describe("POST /api/tasks/:id/comments（異常系）", () => {
+  it("authorが空の場合は400を返す", async () => {
+    const task = await request(app)
+      .post("/api/tasks")
+      .send({ title: "テスト" });
+    const res = await request(app)
+      .post(`/api/tasks/${task.body.id}/comments`)
+      .send({ author: "", content: "コメント" });
+    expect(res.status).toBe(400);
+  });
+
+  it("contentが空の場合は400を返す", async () => {
+    const task = await request(app)
+      .post("/api/tasks")
+      .send({ title: "テスト" });
+    const res = await request(app)
+      .post(`/api/tasks/${task.body.id}/comments`)
+      .send({ author: "ユーザー", content: "" });
+    expect(res.status).toBe(400);
+  });
+
+  it("存在しないタスクへのコメント投稿で404を返す", async () => {
+    const res = await request(app)
+      .post("/api/tasks/nonexistent/comments")
+      .send({ author: "ユーザー", content: "コメント" });
+    expect(res.status).toBe(404);
+  });
+});

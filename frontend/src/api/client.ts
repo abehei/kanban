@@ -27,10 +27,10 @@ export const taskApi = {
 
   get: (id: string) => request<Task>(`/tasks/${id}`),
 
-  create: (body: Pick<Task, "title"> & Partial<Pick<Task, "description" | "column" | "assigned_agent" | "parent_id">>) =>
+  create: (body: Pick<Task, "title"> & Partial<Pick<Task, "description" | "column" | "assigned_agent" | "parent_id" | "color">>) =>
     request<Task>("/tasks", { method: "POST", body: JSON.stringify(body) }),
 
-  update: (id: string, body: Partial<Pick<Task, "title" | "description" | "column" | "assigned_agent" | "progress" | "current_step" | "thinking_log" | "error">>) =>
+  update: (id: string, body: Partial<Pick<Task, "title" | "description" | "column" | "assigned_agent" | "progress" | "current_step" | "thinking_log" | "error" | "color">>) =>
     request<Task>(`/tasks/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
 
   delete: (id: string) => request<void>(`/tasks/${id}`, { method: "DELETE" }),
