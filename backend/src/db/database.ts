@@ -14,7 +14,7 @@ export function getDatabase(): Database.Database {
   return db;
 }
 
-function initializeSchema(db: Database.Database): void {
+export function initializeSchema(db: Database.Database): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS tasks (
       id           TEXT PRIMARY KEY,
@@ -29,6 +29,8 @@ function initializeSchema(db: Database.Database): void {
       current_step TEXT,
       thinking_log TEXT NOT NULL DEFAULT '[]',
       error        TEXT,
+      color        TEXT
+                        CHECK (color IN ('red','orange','yellow','green','blue','purple','gray') OR color IS NULL),
       created_at   TEXT NOT NULL,
       updated_at   TEXT NOT NULL
     );
@@ -47,4 +49,21 @@ function initializeSchema(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_tasks_parent_id ON tasks(parent_id);
     CREATE INDEX IF NOT EXISTS idx_comments_task_id ON comments(task_id);
   `);
+
+  // 既存のテーブルにカラムを追加（存在しない場合のみ）
+  try {
+    db.exec(`
+      ALTER TABLE tasks ADD COLUMN color TEXT
+        CHECK (color IN ('red','orange','yellow','green','blue','purple','gray') OR color IS NULL)
+    `);
+  } catch (err) {
+    // カラムが既に存在する場合はエラーを無視
+  }
+}
+
+export function createTestDatabase(): Database.Database {
+  const testDb = new Database(":memory:");
+  testDb.pragma("journal_mode = WAL");
+  initializeSchema(testDb);
+  return testDb;
 }
